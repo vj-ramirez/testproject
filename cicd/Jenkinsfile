@@ -33,7 +33,6 @@ pipeline {
         stage('Deploy'){
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'vm-key', keyFileVariable: 'SSH_PRIVATE_KEY_PATH')]) {
-                    echo "$SSH_PRIVATE_KEY_PATH"
                     sh "ssh -i $SSH_PRIVATE_KEY_PATH ubuntu@dayal-test.letspractice.tk pwd"
                 }
                 sh "docker stop hello-world | true"
