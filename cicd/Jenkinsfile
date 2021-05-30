@@ -36,10 +36,11 @@ pipeline {
                     sh '''ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ubuntu@dayal-test.letspractice.tk <<ENDSSH
                         docker stop hello-world | true
                         docker rm hello-world | true
-                        docker run --name hello-world -d -p 9004:80 vigneshsweekaran/hello-world:${TAG}
+                        docker run --name hello-world -d -p 9004:8080 vigneshsweekaran/hello-world:${TAG}
 ENDSSH
                     '''
-                    sh "ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ubuntu@dayal-test.letspractice.tk 'docker stop hello-world | true && docker rm hello-world | true && docker run --name hello-world -d -p 9004:80 vigneshsweekaran/hello-world:${TAG}'"
+                    // Second way of putting the commands in single sh step
+                    // sh "ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ubuntu@dayal-test.letspractice.tk 'docker stop hello-world | true && docker rm hello-world | true && docker run --name hello-world -d -p 9004:8080 vigneshsweekaran/hello-world:${TAG}'"
                 }
             }
         }
