@@ -20,7 +20,7 @@ pipeline {
                 }
             }
         }
-	      stage('Pushing Docker Image to Dockerhub') {
+        stage('Pushing Docker Image to Dockerhub') {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker_credential') {
@@ -32,9 +32,16 @@ pipeline {
         }
         stage('Deploy'){
             steps {
-                sh "docker stop hello-world | true"
-                sh "docker rm hello-world | true"
-                sh "docker run --name hello-world -d -p 9004:80 vigneshsweekaran/hello-world:${TAG}"
+                withCredentials([sshUserPrivateKey(credentialsId: 'vm-key', keyFileVariable: 'SSH_PRIVATE_KEY_PATH')]) {
+                    sh '''ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ubuntu@dayal-test.letspractice.tk <<ENDSSH
+                        docker stop hello-world | true
+                        docker rm hello-world | true
+                        docker run --name hello-world -d -p 9004:8080 vigneshsweekaran/hello-world:${TAG}
+ENDSSH
+                    '''
+                    // Second way of putting the commands in single sh step
+                    // sh "ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ubuntu@dayal-test.letspractice.tk 'docker stop hello-world | true && docker rm hello-world | true && docker run --name hello-world -d -p 9004:8080 vigneshsweekaran/hello-world:${TAG}'"
+                }
             }
         }
     }
