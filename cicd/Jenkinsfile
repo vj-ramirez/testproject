@@ -28,15 +28,6 @@ pipeline {
                 }
             }
         }
-        stage('Anchore Scanning') {
-            steps {
-                script {
-                    def imageLine = "vigneshsweekaran/hello-world:${TAG}"
-                    writeFile file: 'anchore_images', text: imageLine
-                    anchore name: 'anchore_images'
-                }
-            }
-        }
 	    stage('Pushing Docker Image to Dockerhub') {
             steps {
                 script {
@@ -44,6 +35,15 @@ pipeline {
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push()
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push("latest")
                     }
+                }
+            }
+        }
+        stage('Anchore Scanning') {
+            steps {
+                script {
+                    def imageLine = "vigneshsweekaran/hello-world:${TAG}"
+                    writeFile file: 'anchore_images', text: imageLine
+                    anchore name: 'anchore_images'
                 }
             }
         }
