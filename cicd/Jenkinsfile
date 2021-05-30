@@ -33,7 +33,7 @@ pipeline {
         stage('Deploy'){
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'vm-key', keyFileVariable: 'SSH_PRIVATE_KEY_PATH')]) {
-                    sh '''ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ubuntu@dayal-test.letspractice.tk >> ENDSSH
+                    sh '''ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no ubuntu@dayal-test.letspractice.tk << ENDSSH
                         docker stop hello-world | true
                         docker rm hello-world | true
                         docker run --name hello-world -d -p 9004:80 vigneshsweekaran/hello-world:${TAG}
