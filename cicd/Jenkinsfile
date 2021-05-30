@@ -32,7 +32,7 @@ pipeline {
         }
         stage('Deploy'){
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'vm_key', keyFileVariable: 'SSH_PRIVATE_KEY_PATH')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'vm-key', keyFileVariable: 'SSH_PRIVATE_KEY_PATH')]) {
                     echo "$SSH_PRIVATE_KEY_PATH"
                     sh "ssh -i $SSH_PRIVATE_KEY_PATH ubuntu@dayal-test.letspractice.tk pwd"
                 }
