@@ -23,7 +23,7 @@ pipeline {
 	      stage('Pushing Docker Image to Dockerhub') {
             steps {
                 script {
-                    docker.withRegistry('https://devops.letspractice.tk', 'docker_credential') {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker_credential') {
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push()
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push("latest")
                     }
