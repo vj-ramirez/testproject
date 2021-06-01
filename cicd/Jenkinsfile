@@ -21,6 +21,11 @@ pipeline {
                 }
             }
         }
+        stage("SonarQube Quality gate") {
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
         stage('Docker Build') {
             steps {
                 script {
@@ -39,6 +44,15 @@ pipeline {
             }
         }
         stage('Anchore Scanning') {
+            steps {
+                script {
+                    def imageLine = "vigneshsweekaran/hello-world:${TAG}"
+                    writeFile file: 'anchore_images', text: imageLine
+                    anchore name: 'anchore_images', bailOnFail: false
+                }
+            }
+        }
+        stage('Mcafee Scanning') {
             steps {
                 script {
                     def imageLine = "vigneshsweekaran/hello-world:${TAG}"

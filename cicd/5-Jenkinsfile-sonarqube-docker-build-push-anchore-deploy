@@ -21,7 +21,7 @@ pipeline {
                 }
             }
         }
-        stage("Quality gate") {
+        stage("SonarQube Quality gate") {
             steps {
                 waitForQualityGate abortPipeline: true
             }
@@ -40,6 +40,15 @@ pipeline {
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push()
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push("latest")
                     }
+                }
+            }
+        }
+        stage('Anchore Scanning') {
+            steps {
+                script {
+                    def imageLine = "vigneshsweekaran/hello-world:${TAG}"
+                    writeFile file: 'anchore_images', text: imageLine
+                    anchore name: 'anchore_images', bailOnFail: false
                 }
             }
         }
