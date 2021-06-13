@@ -34,7 +34,7 @@ pipeline {
         stage('Deploy to Kubernetes'){
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'vm-key', keyFileVariable: 'SSH_PRIVATE_KEY_PATH')]) {
-                    sh "ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no opc@k8s.letspractice.tk 'kubectl apply -f deployment/deployment.yaml'"
+                    sh "ssh -i $SSH_PRIVATE_KEY_PATH -o StrictHostKeyChecking=no opc@k8s.letspractice.tk 'mkdir /tmp/hello-world; cp deployment/deployment.yaml /tmp/hello-world/deployment.yaml; kubectl apply -f /tmp/hello-world/deployment.yaml'"
                 }
             }
         }
