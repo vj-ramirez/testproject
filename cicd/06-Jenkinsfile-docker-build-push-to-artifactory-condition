@@ -9,7 +9,6 @@ pipeline {
     environment {
         DATE = new Date().format('yy.M')
         TAG = "${DATE}.${BUILD_NUMBER}"
-        DockerRegistryUrl = getDockerRegistryUrl(params.DockerRegistry)
     }
     stages {
         stage ('Build') {
@@ -20,34 +19,29 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build("vigneshsweekaran/hello-world:${TAG}")
+                    docker.build("hello-world:${TAG}")
                 }
             }
         }
 	    stage('Pushing Docker Image to Dockerhub') {
             steps {
                 script {
-                    docker.withRegistry("${DockerRegistryUrl}", 'docker_credential') {
+                    docker.withRegistry("https://registry.hub.docker.com", 'docker_credential') {
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push()
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push("latest")
                     }
                 }
             }
         }
-        stage('Deploy'){
+	    stage('Pushing Docker Image to Jfrog Artifactory') {
             steps {
-                sh "docker stop hello-world | true"
-                sh "docker rm hello-world | true"
-                sh "docker run --name hello-world -d -p 9004:8080 vigneshsweekaran/hello-world:${TAG}"
+                script {
+                    docker.withRegistry('https://vigneshsweekaran.jfrog.io', 'artifactory-credential') {
+                        docker.image("default-docker-local/hello-world:${TAG}").push()
+                        docker.image("default-docker-local/hello-world:${TAG}").push("latest")
+                    }
+                }
             }
         }
-    }
-}
-
-def getDockerRegistryUrl(dockerRegistryName) {
-    if("Dockerhub".equals(dockerRegistryName)) {
-        return "https://registry.hub.docker.com";
-    } else if ("JfrogArtifactory".equals(dockerRegistryName) {
-        return "https://vigneshsweekaran.jfrog.io";
     }
 }
