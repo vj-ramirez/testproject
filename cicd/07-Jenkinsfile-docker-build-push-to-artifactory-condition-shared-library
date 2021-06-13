@@ -18,7 +18,7 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        stage('Docker build and push to Dockerhub') {
+        stage('Docker build and push to Docker Registry') {
             steps {
                 script {
                     dockerBuildPush("params.dockerRegistry")
