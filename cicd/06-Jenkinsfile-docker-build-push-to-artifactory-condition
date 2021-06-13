@@ -3,9 +3,13 @@ pipeline {
     tools {
         maven 'maven-3.6.3' 
     }
+    parameters {
+        choice(name: 'DockerRegistry', choices: ['Dockerhub', 'JfrogArtifactory'], description: 'Select Docker Registry')
+    }
     environment {
         DATE = new Date().format('yy.M')
         TAG = "${DATE}.${BUILD_NUMBER}"
+        DockerRegistryUrl = getDockerRegistryUrl(params.DockerRegistry)
     }
     stages {
         stage ('Build') {
@@ -23,7 +27,7 @@ pipeline {
 	    stage('Pushing Docker Image to Dockerhub') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker_credential') {
+                    docker.withRegistry("${DockerRegistryUrl}", 'docker_credential') {
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push()
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push("latest")
                     }
@@ -37,5 +41,13 @@ pipeline {
                 sh "docker run --name hello-world -d -p 9004:8080 vigneshsweekaran/hello-world:${TAG}"
             }
         }
+    }
+}
+
+def getDockerRegistryUrl(dockerRegistryName) {
+    if("Dockerhub".equals(dockerRegistryName)) {
+        return "https://registry.hub.docker.com";
+    } else if ("JfrogArtifactory".equals(dockerRegistryName) {
+        return "https://vigneshsweekaran.jfrog.io";
     }
 }
