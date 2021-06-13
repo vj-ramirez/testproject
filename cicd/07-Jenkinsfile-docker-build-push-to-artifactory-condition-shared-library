@@ -21,7 +21,7 @@ pipeline {
         stage('Docker build and push to Docker Registry') {
             steps {
                 script {
-                    dockerBuildPush("params.dockerRegistry")
+                    dockerBuildPush("${params.dockerRegistry}")
                 }
             }
         }
