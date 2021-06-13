@@ -4,7 +4,7 @@ pipeline {
         maven 'maven-3.6.3' 
     }
     parameters {
-        choice(name: 'DockerRegistry', choices: ['Dockerhub', 'JfrogArtifactory'], description: 'Select Docker Registry')
+        choice(name: 'dockerRegistry', choices: ['Dockerhub', 'JfrogArtifactory'], description: 'Select Docker Registry')
     }
     environment {
         DATE = new Date().format('yy.M')
@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Docker build and push to Dockerhub') {
             when {
-                environment name: 'DockerRegistry', value: 'Dockerhub'
+                environment name: 'dockerRegistry', value: 'Dockerhub'
             }
             steps {
                 script {
@@ -32,7 +32,7 @@ pipeline {
         }
 	    stage('Docker build and push to Jfrog Artifactory') {
             when {
-                environment name: 'DockerRegistry', value: 'JfrogArtifactory'
+                environment name: 'dockerRegistry', value: 'JfrogArtifactory'
             }
             steps {
                 script {
