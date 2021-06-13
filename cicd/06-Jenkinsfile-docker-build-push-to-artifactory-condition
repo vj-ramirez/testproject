@@ -16,16 +16,13 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        stage('Docker Build') {
-            steps {
-                script {
-                    docker.build("hello-world:${TAG}")
-                }
+        stage('Docker build and push to Dockerhub') {
+            when {
+                environment name: 'DockerRegistry', value: 'Dockerhub'
             }
-        }
-	    stage('Pushing Docker Image to Dockerhub') {
             steps {
                 script {
+                    docker.build("vigneshsweekaran/hello-world:${TAG}")
                     docker.withRegistry("https://registry.hub.docker.com", 'docker_credential') {
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push()
                         docker.image("vigneshsweekaran/hello-world:${TAG}").push("latest")
@@ -33,9 +30,13 @@ pipeline {
                 }
             }
         }
-	    stage('Pushing Docker Image to Jfrog Artifactory') {
+	    stage('Docker build and push to Jfrog Artifactory') {
+            when {
+                environment name: 'DockerRegistry', value: 'JfrogArtifactory'
+            }
             steps {
                 script {
+                    docker.build("default-docker-local/hello-world:${TAG}")
                     docker.withRegistry('https://vigneshsweekaran.jfrog.io', 'artifactory-credential') {
                         docker.image("default-docker-local/hello-world:${TAG}").push()
                         docker.image("default-docker-local/hello-world:${TAG}").push("latest")

@@ -16,16 +16,16 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build("hello-world:${TAG}")
+                    docker.build("default-docker-local/hello-world:${TAG}")
                 }
             }
         }
 	    stage('Pushing Docker Image to Jfrog Artifactory') {
             steps {
                 script {
-                    docker.withRegistry('https://vigneshsweekaran.jfrog.io/default-docker-local', 'artifactory-credential') {
-                        docker.image("hello-world:${TAG}").push()
-                        docker.image("hello-world:${TAG}").push("latest")
+                    docker.withRegistry('https://vigneshsweekaran.jfrog.io', 'artifactory-credential') {
+                        docker.image("default-docker-local/hello-world:${TAG}").push()
+                        docker.image("default-docker-local/hello-world:${TAG}").push("latest")
                     }
                 }
             }
