@@ -20,7 +20,7 @@ pipeline {
                 }
             }
         }
-	    stage('Pushing Docker Image to Jfrog Artifactory') {
+	stage('Pushing Docker Image to Jfrog Artifactory') {
             steps {
                 script {
                     docker.withRegistry('https://vigneshsweekaran.jfrog.io', 'artifactory-credential') {
