@@ -12,8 +12,10 @@ pipeline {
         script {
           // CHANGE_ID is set only for pull requests, so it is safe to access the pullRequest global variable
           if (env.CHANGE_ID) {
+            def date = sh(returnStdout: true, script: "date -u").trim()
             pullRequest.comment("Build ${env.BUILD_ID} ran at ${date}")
           }
+          pullRequest.comment("Executed outside if condition")
         }
       }
     }
@@ -23,7 +25,6 @@ pipeline {
           script {
               // CHANGE_ID is set only for pull requests, so it is safe to access the pullRequest global variable
               if (env.CHANGE_ID) {
-                  def date = sh(returnStdout: true, script: "date -u").trim()
                   pullRequest.addLabel('Build Failed')
               }
           }
