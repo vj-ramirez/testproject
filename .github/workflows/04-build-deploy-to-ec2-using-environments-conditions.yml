@@ -54,16 +54,16 @@ jobs:
             env = 'dev'
           elif os.environ['GITHUB_REF'].startswith('refs/heads/feature/'):
             env = 'dev'
-          elif os.environ['GITHUB_REF'] == 'refs/haeds/staging':
+          elif os.environ['GITHUB_REF'] == 'refs/heads/staging':
             env = 'staging'
-          elif os.environ['GITHUB_REF'] == 'refs/haeds/master':
+          elif os.environ['GITHUB_REF'] == 'refs/heads/master':
             env = 'prod'
           print('::set-output name=environment-name::' + env)
 
   Deploy:
     runs-on: ubuntu-latest
     needs: pre-deploy
-    name: Deploy ${{ needs.pre-deploy.outputs.environment-name }}
+    name: Deploy to ${{ needs.pre-deploy.outputs.environment-name }}
     environment: ${{ needs.pre-deploy.outputs.environment-name }}
     if: ${{ needs.pre-deploy.outputs.environment-name != 'none' }}
     steps:
