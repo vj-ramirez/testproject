@@ -66,15 +66,27 @@ jobs:
     name: Deploy to ${{ needs.pre-deploy.outputs.environment-name }}
     environment: ${{ needs.pre-deploy.outputs.environment-name }}
     if: ${{ needs.pre-deploy.outputs.environment-name != 'none' }}
+    strategy:
+      matrix:
+        no-env: [1, 2]
+        include:
+          - no-env: 1
+            HOST: ${{ secrets.HOST1 }}
+            USERNAME: ${{ secrets.USERNAME1 }}
+            KEY: ${{ secrets.KEY1 }}
+          - no-env: 2
+            HOST: ${{ secrets.HOST2 }}
+            USERNAME: ${{ secrets.USERNAME2 }}
+            KEY: ${{ secrets.KEY2 }}
     steps:
       - name: Deploying to Dev environment
         uses: appleboy/ssh-action@master
         env:
           TAG: ${{ github.run_number }}
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
+          host: ${{ matrix.HOST }}
+          username: ${{ matrix.USERNAME }}
+          key: ${{ matrix.KEY }}
           envs: TAG
           script: |
             docker rm -f hello-world-dev || true
