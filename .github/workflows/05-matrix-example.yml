@@ -84,9 +84,10 @@ jobs:
         env:
           TAG: ${{ github.run_number }}
         with:
-          host: ${{ format('secrets.{0}', matrix.HOST) }}
-          username: ${{ format('secrets.{0}', matrix.USERNAME) }}
-          key: ${{ format('secrets.{0}', matrix.KEY) }}
+          host: ${{ secrets[matrix.HOST] }}
+          username: ${{ secrets[matrix.USERNAME] }}
+#           username: ${{ format('secrets.{0}', matrix.USERNAME) }}
+          key: ${{ secrets[matrix.KEY] }}
           envs: TAG
           script: |
             docker rm -f hello-world-dev || true
