@@ -71,22 +71,22 @@ jobs:
         no-env: [1, 2]
         include:
           - no-env: 1
-            HOST: secrets.HOST1
-            USERNAME: secrets.USERNAME1
-            KEY: secrets.KEY1
+            HOST: HOST1
+            USERNAME: USERNAME1
+            KEY: KEY1
           - no-env: 2
-            HOST: secrets.HOST2
-            USERNAME: secrets.USERNAME2
-            KEY: secrets.KEY2
+            HOST: HOST2
+            USERNAME: USERNAME2
+            KEY: KEY2
     steps:
       - name: Deploying to Dev environment
         uses: appleboy/ssh-action@master
         env:
           TAG: ${{ github.run_number }}
         with:
-          host: ${{ matrix.HOST }}
-          username: ${{ matrix.USERNAME }}
-          key: ${{ matrix.KEY }}
+          host: ${{ format('secrets.{0}', matrix.HOST) }}
+          username: ${{ format('secrets.{0}', matrix.USERNAME) }}
+          key: ${{ format('secrets.{0}', matrix.KEY) }}
           envs: TAG
           script: |
             docker rm -f hello-world-dev || true
