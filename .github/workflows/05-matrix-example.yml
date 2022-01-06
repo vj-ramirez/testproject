@@ -71,13 +71,13 @@ jobs:
         no-env: [1, 2]
         include:
           - no-env: 1
-            HOST: ${{ secrets.HOST1 }}
-            USERNAME: ${{ secrets.USERNAME1 }}
-            KEY: ${{ secrets.KEY1 }}
+            HOST: secrets.HOST1
+            USERNAME: secrets.USERNAME1
+            KEY: secrets.KEY1
           - no-env: 2
-            HOST: ${{ secrets.HOST2 }}
-            USERNAME: ${{ secrets.USERNAME2 }}
-            KEY: ${{ secrets.KEY2 }}
+            HOST: secrets.HOST2
+            USERNAME: secrets.USERNAME2
+            KEY: secrets.KEY2
     steps:
       - name: Deploying to Dev environment
         uses: appleboy/ssh-action@master
