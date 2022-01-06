@@ -1,4 +1,4 @@
-name: Build and deploy to AWS Ec2 using SSH - Environments,Conditions
+name: Matrix example with additional variables for matrix
 
 # on:
 #   push:
