@@ -81,7 +81,7 @@ jobs:
             docker rm -f hello-world-dev || true
             docker run --name hello-world-${{ needs.pre-deploy.outputs.environment-name }} -d -p 9003:8080 vigneshsweekaran/hello-world-github-actions:$TAG
            
-   Test:
+  Test:
     runs-on: ubuntu-latest
     if: ${{ github.ref != 'refs/heads/dev' }}
     steps:
