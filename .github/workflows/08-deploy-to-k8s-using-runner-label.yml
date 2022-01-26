@@ -37,7 +37,7 @@ jobs:
           elif os.environ['GITHUB_REF'] == 'refs/heads/master':
             env = 'prod'
           print('::set-output name=environment-name::' + env)
-  Deploy to dev:
+  Deploy-to-dev:
     runs-on: ubuntu-latest
 #     runs-on: [ dev ]
     needs: setting-environment
@@ -48,7 +48,8 @@ jobs:
       - name: Deploying to Dev environment
         run: |
           export KUBECONFIG="/etc/kubeconfig"
-  Deploy to prod:
+          kubectl apply -f ./dev
+  Deploy-to-prod:
     runs-on: ubuntu-latest
   #   runs-on: [ prod ]
     needs: setting-environment
@@ -59,3 +60,4 @@ jobs:
       - name: Deploying to prod environment
         run: |
           export KUBECONFIG="/etc/kubeconfig"
+          kubectl apply -f ./dev
