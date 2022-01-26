@@ -9,13 +9,7 @@ name: Build and deploy to K8s based on folder change and runner label
 
 on: workflow_dispatch
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-  
+jobs:  
   setting-environment:
     name: setting-environment
     runs-on: ubuntu-latest
@@ -24,19 +18,10 @@ jobs:
     steps:
       - name: Determine Environment
         id: get-environment
-        shell: python
-        run: |
-          import os
-          env = 'none'
-          if os.environ['GITHUB_REF'] == 'refs/heads/dev':
-            env = 'dev'
-          elif os.environ['GITHUB_REF'].startswith('refs/heads/feature/'):
-            env = 'dev'
-          elif os.environ['GITHUB_REF'] == 'refs/heads/staging':
-            env = 'staging'
-          elif os.environ['GITHUB_REF'] == 'refs/heads/master':
-            env = 'prod'
-          print('::set-output name=environment-name::' + env)
+        uses: tj-actions/changed-files@v14.1
+        with:
+          files: |
+            my-file.txt
   Deploy-to-dev:
     runs-on: ubuntu-latest
 #     runs-on: [ dev ]
@@ -45,6 +30,15 @@ jobs:
     environment: dev
     if: ${{ needs.setting-environment.outputs.environment-name != 'none' }}
     steps:
+      - uses: tj-actions/changed-files@v14.1
+        with:
+          files: |
+            dev
+      - uses: ministryofjustice/setup-git-crypt@main
+      - name: Unlock secrets
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
       - name: Deploying to Dev environment
         run: |
           export KUBECONFIG="/etc/kubeconfig"
@@ -57,6 +51,15 @@ jobs:
     environment: prod
     if: ${{ needs.setting-environment.outputs.environment-name != 'none' }}
     steps:
+      - uses: tj-actions/changed-files@v14.1
+        with:
+          files: |
+            prod
+      - uses: ministryofjustice/setup-git-crypt@main
+      - name: Unlock secrets
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
       - name: Deploying to prod environment
         run: |
           export KUBECONFIG="/etc/kubeconfig"
