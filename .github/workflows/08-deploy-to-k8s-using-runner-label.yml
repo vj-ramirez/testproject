@@ -18,6 +18,8 @@ jobs:
       prod-enabled: ${{ steps.prod-changed.outputs.prod-folder-changed }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Check dev folder changes
         id: check-dev-folder
         uses: tj-actions/changed-files@v14.1
