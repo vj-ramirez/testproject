@@ -21,12 +21,12 @@ jobs:
         id: check-dev-folder
         uses: tj-actions/changed-files@v14.1
         with:
-          files: dev
+          files: deployment/dev
       - name: Check prod folder changes
         id: check-prod-folder
         uses: tj-actions/changed-files@v14.1
         with:
-          files: prod
+          files: deployment/prod
       - name: set dev output
         id: dev-changed
         if: steps.check-dev-folder.outputs.any_changed == 'true'
