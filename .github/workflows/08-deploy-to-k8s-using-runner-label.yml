@@ -14,26 +14,35 @@ jobs:
     name: setting-environment
     runs-on: ubuntu-latest
     outputs:
-      environment-name: ${{ steps.get-environment.outputs.environment-name }}
+      dev-enabled: ${{ steps.dev-changed.outputs.dev-folder-changed }}
+      prod-enabled: ${{ steps.prod-changed.outputs.prod-folder-changed }}
     steps:
-      - name: Determine Environment
-        id: get-environment
+      - name: Check dev folder changes
+        id: check-dev-folder
         uses: tj-actions/changed-files@v14.1
         with:
-          files: |
-            my-file.txt
+          files: dev
+      - name: Check prod folder changes
+        id: check-prod-folder
+        uses: tj-actions/changed-files@v14.1
+        with:
+          files: prod
+      - name: set dev output
+        id: dev-changed
+        if: steps.check-dev-folder.outputs.any_changed == 'true'
+        run: echo "::set-output name=dev-folder-changed::true"
+      - name: set dev output
+        id: prod-changed
+        if: steps.check-prod-folder.outputs.any_changed == 'true'
+        run: echo "::set-output name=prod-folder-changed::true"
   Deploy-to-dev:
     runs-on: ubuntu-latest
 #     runs-on: [ dev ]
     needs: setting-environment
     name: Deploy to dev
     environment: dev
-    if: ${{ needs.setting-environment.outputs.environment-name != 'none' }}
+    if: ${{ needs.setting-environment.outputs.dev-enabled == 'true' }}
     steps:
-      - uses: tj-actions/changed-files@v14.1
-        with:
-          files: |
-            dev
       - uses: ministryofjustice/setup-git-crypt@main
       - name: Unlock secrets
         uses: sliteteam/github-action-git-crypt-unlock@1.2.0
@@ -42,19 +51,15 @@ jobs:
       - name: Deploying to Dev environment
         run: |
           export KUBECONFIG="/etc/kubeconfig"
-          kubectl apply -f ./dev
+          kubectl apply -f .deployment/dev
   Deploy-to-prod:
     runs-on: ubuntu-latest
   #   runs-on: [ prod ]
     needs: setting-environment
     name: Deploy to prod
     environment: prod
-    if: ${{ needs.setting-environment.outputs.environment-name != 'none' }}
+    if: ${{ needs.setting-environment.outputs.prod-enabled == 'true' }}
     steps:
-      - uses: tj-actions/changed-files@v14.1
-        with:
-          files: |
-            prod
       - uses: ministryofjustice/setup-git-crypt@main
       - name: Unlock secrets
         uses: sliteteam/github-action-git-crypt-unlock@1.2.0
@@ -63,4 +68,4 @@ jobs:
       - name: Deploying to prod environment
         run: |
           export KUBECONFIG="/etc/kubeconfig"
-          kubectl apply -f ./dev
+          kubectl apply -f .deployment/prod
