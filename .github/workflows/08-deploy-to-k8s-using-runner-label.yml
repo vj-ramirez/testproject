@@ -17,6 +17,7 @@ jobs:
       dev-enabled: ${{ steps.dev-changed.outputs.dev-folder-changed }}
       prod-enabled: ${{ steps.prod-changed.outputs.prod-folder-changed }}
     steps:
+      - uses: actions/checkout@v2
       - name: Check dev folder changes
         id: check-dev-folder
         uses: tj-actions/changed-files@v14.1
@@ -43,6 +44,7 @@ jobs:
     environment: dev
     if: ${{ needs.setting-environment.outputs.dev-enabled == 'true' }}
     steps:
+      - uses: actions/checkout@v2
       - uses: ministryofjustice/setup-git-crypt@main
       - name: Unlock secrets
         uses: sliteteam/github-action-git-crypt-unlock@1.2.0
@@ -60,6 +62,7 @@ jobs:
     environment: prod
     if: ${{ needs.setting-environment.outputs.prod-enabled == 'true' }}
     steps:
+      - uses: actions/checkout@v2
       - uses: ministryofjustice/setup-git-crypt@main
       - name: Unlock secrets
         uses: sliteteam/github-action-git-crypt-unlock@1.2.0
