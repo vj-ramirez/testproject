@@ -1,0 +1,61 @@
+name: Build and deploy to K8s based on folder change and runner label
+
+# on:
+#   push:
+#     branches:
+#       - dev
+#       - staging
+#       - master
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+  
+  setting-environment:
+    name: setting-environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment-name: ${{ steps.get-environment.outputs.environment-name }}
+    steps:
+      - name: Determine Environment
+        id: get-environment
+        shell: python
+        run: |
+          import os
+          env = 'none'
+          if os.environ['GITHUB_REF'] == 'refs/heads/dev':
+            env = 'dev'
+          elif os.environ['GITHUB_REF'].startswith('refs/heads/feature/'):
+            env = 'dev'
+          elif os.environ['GITHUB_REF'] == 'refs/heads/staging':
+            env = 'staging'
+          elif os.environ['GITHUB_REF'] == 'refs/heads/master':
+            env = 'prod'
+          print('::set-output name=environment-name::' + env)
+  Deploy to dev:
+    runs-on: ubuntu-latest
+#     runs-on: [ dev ]
+    needs: setting-environment
+    name: Deploy to dev
+    environment: dev
+    if: ${{ needs.setting-environment.outputs.environment-name != 'none' }}
+    steps:
+      - name: Deploying to Dev environment
+        run: |
+          export KUBECONFIG="/etc/kubeconfig"
+  Deploy to prod:
+    runs-on: ubuntu-latest
+  #   runs-on: [ prod ]
+    needs: setting-environment
+    name: Deploy to prod
+    environment: prod
+    if: ${{ needs.setting-environment.outputs.environment-name != 'none' }}
+    steps:
+      - name: Deploying to prod environment
+        run: |
+          export KUBECONFIG="/etc/kubeconfig"
