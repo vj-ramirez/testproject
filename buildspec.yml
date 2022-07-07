@@ -9,9 +9,9 @@ phases:
     runtime-versions:
       java: corretto8
     commands:
-      - yum install maven
+      - yum install -y maven
     finally:
-      - java --version
+      - java -version
       - mvn --version
   pre_build:
     commands:
