@@ -3,6 +3,7 @@ version: 0.2
 env:
   variables:
     IMAGE_REPO_NAME: "hello-world"
+    AWS_ACCOUNT_ID: "616853969531"
 
 phases:
   install:
