@@ -4,6 +4,8 @@ env:
   variables:
     IMAGE_REPO_NAME: "hello-world"
     AWS_ACCOUNT_ID: "616853969531"
+  parameter-store:
+    DOCKER_PASSWORD: /codeBuild/dockerPassword
 
 phases:
   install:
@@ -16,9 +18,12 @@ phases:
       - mvn --version
   pre_build:
     commands:
+      - echo Logging in to Dockerhub for docker pull limit...
+      - docker login -u vigneshsweekaran -p $DOCKER_PASSWORD
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
+    on-failure: ABORT
     commands:
       - echo Build started on `date`
       - echo Maven build...
@@ -27,6 +32,7 @@ phases:
       - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_BUILD_NUMBER .
       - docker tag $IMAGE_REPO_NAME:$CODEBUILD_BUILD_NUMBER $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
   post_build:
+    on-failure: ABORT
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
