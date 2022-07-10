@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docke ps | grep hello-world
+docker ps | grep hello-world
