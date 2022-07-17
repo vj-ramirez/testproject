@@ -43,5 +43,6 @@ phases:
 
 artifacts:
   files:
-    - sonar-project.properties
+    - appspec.yml
+    - codedeploy/scripts/*
   name: hello-world-build-artifacts
