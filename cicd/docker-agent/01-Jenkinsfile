@@ -5,6 +5,10 @@ pipeline {
             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
+    environment {
+        DATE = new Date().format('yy.M')
+        TAG = "${DATE}.${BUILD_NUMBER}"
+    }
     stages {
         stage ('Build') {
             steps {
