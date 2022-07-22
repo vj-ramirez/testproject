@@ -1,0 +1,12 @@
+pipeline {
+    agent { docker { image 'docker:latest' args '/var/run/docker.sock:/var/run/docker.sock' } }
+    stages {
+        stage ('docker test') {
+            steps {
+                sh '''
+                    docker ps; docker images
+                '''
+            }
+        }
+    }
+}
