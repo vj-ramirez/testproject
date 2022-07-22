@@ -10,7 +10,12 @@ pipeline {
         TAG = "${DATE}.${BUILD_NUMBER}"
     }
     options {
-        timeout(time: 1, unit: 'HOURS') 
+        timeout(time: 1, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '3'))
+        disableConcurrentBuilds()
+        // newContainerPerStage()
+        retry(3)
+        // skipDefaultCheckout()
     }
     stages {
         stage ('Build') {
